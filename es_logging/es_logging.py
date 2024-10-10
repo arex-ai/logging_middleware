@@ -1,16 +1,31 @@
 from enum import Enum
 import logging
+import uuid
+import os
+
 from fastapi import Request
 import httpx
-import uuid
 
 
-LOGGING_API_URL = "http://localhost:8500/log"
+# Configs the URL 
+LOGGING_API_URL = None
 
+def configure_logging_api(url: str):
+    """Function to configure the logging API URL."""
+    global LOGGING_API_URL
+    LOGGING_API_URL = url
+
+
+# Create the 'es_logs' directory and set up the logging fallback file
+LOG_DIR = os.path.join(os.getcwd(), "es_logs")
+LOG_FILE = os.path.join(LOG_DIR, "logging_fallback.log")
+
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
 
 logging.basicConfig(
-    filename='logging_fallback.log', 
-    format='%(asctime)s - %(levelname)s - %(message)s', 
+    filename=LOG_FILE,
+    format='%(asctime)s - %(levelname)s - %(message)s',
     level=logging.ERROR
 )
 
@@ -23,8 +38,15 @@ class LogLevelEnum(str, Enum):
     CRITICAL = "CRITICAL"
 
 
+async def url_check():
+    if not LOGGING_API_URL:
+        return {
+            "Error": "URL must be set for usage."
+        }
+
+
 async def log_context(request: Request):
-    user_id = 1  # You might change this based on actual context
+    user_id = 1  #FIXME
     execution_uuid = request.headers.get('X-Execution-UUID', str(uuid.uuid4()))
     return {
         "execution_uuid": execution_uuid,
@@ -34,6 +56,7 @@ async def log_context(request: Request):
 
 
 async def logging_es(level: LogLevelEnum, message: str, context: dict):
+    await url_check()
     execution_uuid = context['execution_uuid']
     user_id = context['user_id']
     request = context['request']
