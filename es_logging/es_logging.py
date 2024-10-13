@@ -7,14 +7,19 @@ from fastapi import Request
 import httpx
 
 
-# Configs the URL 
-LOGGING_API_URL = None
+class LoggingAPIConfig:
+    _url = None
 
-def configure_logging_api(url: str):
-    """Function to configure the logging API URL."""
-    global LOGGING_API_URL
-    LOGGING_API_URL = url
-    print("############################################################\n", LOGGING_API_URL, "############################################################\n")
+    @classmethod
+    def configure(cls, url: str):
+        cls._url = url
+        print(f"LOGGING_API_URL set to: {cls._url}")
+
+    @classmethod
+    def get_url(cls):
+        if cls._url is None:
+            raise ValueError("LOGGING_API_URL has not been set. Call 'configure_logging_api' first.")
+        return cls._url
 
 
 # Create the 'es_logs' directory and set up the logging fallback file
@@ -40,7 +45,8 @@ class LogLevelEnum(str, Enum):
 
 
 async def url_check():
-    if not LOGGING_API_URL:
+    logging_api_url = LoggingAPIConfig.get_url()
+    if not logging_api_url:
         return {
             "Error": "URL must be set for usage."
         }
@@ -56,40 +62,9 @@ async def log_context(request: Request):
     }
 
 
-# async def logging_es(level: LogLevelEnum, message: str, context: dict):
-#     await url_check()
-#     execution_uuid = context['execution_uuid']
-#     user_id = context['user_id']
-#     request = context['request']
-
-#     log_entry = {
-#         "execution_UUID": execution_uuid,
-#         "user_id": user_id,
-#         "headers": dict(request.headers),
-#         "ip": request.client.host,
-#         "port": request.client.port,
-#         "method": request.method,
-#         "path": request.url.path,
-#         "level": level,
-#         "message": message,
-#     }
-
-#     try:
-#         async with httpx.AsyncClient() as client:
-#             response = await client.post(LOGGING_API_URL, json=log_entry)
-#             if response.status_code != 200:
-#                 logging.error(f"Failed to log to API. Status code: {response.status_code}. Log Entry: {log_entry}")
-#                 return response
-#             return response
-#     except Exception as e:
-#         logging.error(f"Exception occurred while logging to API: {e}. Log Entry: {log_entry}")
-#         return e
-    
-
-async def logging_es(level: LogLevelEnum, message: str, context: dict):
+async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: dict):
     await url_check()
     execution_uuid = context['execution_uuid']
-    user_id = context['user_id']
     request = context['request']
 
     log_entry = {
@@ -106,7 +81,8 @@ async def logging_es(level: LogLevelEnum, message: str, context: dict):
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(LOGGING_API_URL, json=log_entry)
+            logging_api_url = LoggingAPIConfig.get_url()
+            response = await client.post(logging_api_url, json=log_entry)
             if response.status_code != 200:
                 print(f"Failed to log to API. Status code: {response.status_code}. Log Entry: {log_entry}")
                 return response
