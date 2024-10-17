@@ -11,16 +11,16 @@ class LoggingAPIConfig:
     _url = None
 
     @classmethod
-    def configure(cls, url: str):
+    def configure_url(cls, url: str):
         cls._url = url
-        print(f"LOGGING_API_URL set to: {cls._url}")
+        print(f"Logging API URL set to: {cls._url}")
 
     @classmethod
     def get_url(cls):
         if cls._url is None:
-            raise ValueError("LOGGING_API_URL has not been set. Call 'configure_logging_api' first.")
+            raise ValueError("Logging API URL has not been set. Call 'configure_logging_api' first.")
         return cls._url
-
+    
 
 # Create the 'es_logs' directory and set up the logging fallback file
 LOG_DIR = os.path.join(os.getcwd(), "es_logs")
