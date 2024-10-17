@@ -53,12 +53,16 @@ async def url_check():
 
 
 async def log_context(request: Request):
-    user_id = 1  #FIXME
     execution_uuid = request.headers.get('X-Execution-UUID', str(uuid.uuid4()))
+
+    token = request.headers.get('authorization')
+    if not token:
+        raise ValueError("Authorization token is missing from the headers.")
+    
     return {
+        "token": token,
         "execution_uuid": execution_uuid,
         "request": request,
-        "user_id": user_id
     }
 
 
@@ -67,10 +71,13 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
     execution_uuid = context['execution_uuid']
     request = context['request']
 
+    headers = dict(request.headers)
+    token = headers["authorization"]
+
     log_entry = {
         "execution_UUID": execution_uuid,
         "user_id": user_id,
-        "headers": dict(request.headers),
+        "headers": headers.pop("authorization"),
         "ip": request.client.host,
         "port": request.client.port,
         "method": request.method,
