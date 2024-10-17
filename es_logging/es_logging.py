@@ -9,7 +9,6 @@ import httpx
 
 class LoggingAPIConfig:
     _url = None
-    _service_name = None
 
     @classmethod
     def configure_url(cls, url: str):
@@ -21,17 +20,6 @@ class LoggingAPIConfig:
         if cls._url is None:
             raise ValueError("Logging API URL has not been set. Call 'configure_logging_api' first.")
         return cls._url
-
-    @classmethod
-    def configure_service_name(cls, service_name: str):
-        cls._service_name = service_name
-        print(f"Logging API service name set to: {cls._service_name}")
-
-    @classmethod
-    def get_service_name(cls):
-        if cls._service_name is None:
-            raise ValueError("Logging API service name has not been set. Call 'configure_service_name' first.")
-        return cls._service_name
     
 
 # Create the 'es_logs' directory and set up the logging fallback file
