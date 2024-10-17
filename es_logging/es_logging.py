@@ -70,14 +70,16 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
     await url_check()
     execution_uuid = context['execution_uuid']
     request = context['request']
+    token = context['token']
 
-    headers = dict(request.headers)
-    token = headers["authorization"]
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
 
     log_entry = {
         "execution_UUID": execution_uuid,
         "user_id": user_id,
-        "headers": headers.pop("authorization"),
+        "headers": dict(request.headers).pop("authorization", None),
         "ip": request.client.host,
         "port": request.client.port,
         "method": request.method,
@@ -89,7 +91,7 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
     try:
         async with httpx.AsyncClient() as client:
             logging_api_url = LoggingAPIConfig.get_url()
-            response = await client.post(logging_api_url, json=log_entry)
+            response = await client.post(logging_api_url, headers=headers, json=log_entry)
             if response.status_code != 200:
                 print(f"Failed to log to API. Status code: {response.status_code}. Log Entry: {log_entry}")
                 return response
