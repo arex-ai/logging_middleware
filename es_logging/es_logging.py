@@ -79,7 +79,7 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
     log_entry = {
         "execution_UUID": execution_uuid,
         "user_id": user_id,
-        "headers": dict(request.headers).pop("authorization", None),
+        "headers": dict(request.headers),
         "ip": request.client.host,
         "port": request.client.port,
         "method": request.method,
