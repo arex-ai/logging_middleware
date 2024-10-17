@@ -73,7 +73,7 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
     token = context['token']
 
     headers = {
-        "Authorization": f"Bearer {token}"
+        "Authorization": token
     }
 
     log_entry = {
