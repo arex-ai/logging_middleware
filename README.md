@@ -33,8 +33,7 @@ This is how the middleware actually sends a log to the logging service.
     await logging_es(level=LogLevelEnum.INFO, message="fetching SharePoint connections...", user_id=user["id"], context=context)
     ```
 
-    > [!WARNING]
-    > Failing to provide any of the shown parameters will result in an error of the log post.
-
-    > [!TIP]
-    > Message can be an fstring to provide additional information of the log.
+> [!WARNING]
+> Failing to provide any of the shown parameters will result in an error of the log post.
+> [!TIP]
+> Message can be an fstring to provide additional information of the log.
