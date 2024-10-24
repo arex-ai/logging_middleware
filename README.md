@@ -35,5 +35,6 @@ This is how the middleware actually sends a log to the logging service.
 
 > [!WARNING]
 > Failing to provide any of the shown parameters will result in an error of the log post.
+
 > [!TIP]
 > Message can be an fstring to provide additional information of the log.
