@@ -66,7 +66,7 @@ async def log_context(request: Request):
     }
 
 
-async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: dict):
+async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: dict, process_hierarchy: dict = None):
     await url_check()
     execution_uuid = context['execution_uuid']
     request = context['request']
@@ -86,6 +86,7 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
         "path": request.url.path,
         "level": level,
         "message": message,
+        "process_hierarchy": process_hierarchy
     }
 
     try:
