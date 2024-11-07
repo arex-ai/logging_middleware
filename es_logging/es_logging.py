@@ -66,7 +66,15 @@ async def log_context(request: Request):
     }
 
 
-async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: dict, process_hierarchy: dict = None):
+async def logging_es(
+    level: LogLevelEnum, 
+    message: str, 
+    user_id: int, 
+    context: dict,
+    status: str = None,
+    process_info: dict = None, 
+    process_hierarchy: dict = None
+):
     await url_check()
     execution_uuid = context['execution_uuid']
     request = context['request']
@@ -76,16 +84,21 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
         "Authorization": token
     }
 
+    headers_content = dict(request.headers)
+
     log_entry = {
         "execution_UUID": execution_uuid,
         "user_id": user_id,
-        "headers": dict(request.headers),
+        "host": headers_content["host"],
+        "authorization": headers_content["authorization"],
         "ip": request.client.host,
         "port": request.client.port,
         "method": request.method,
         "path": request.url.path,
         "level": level,
+        "status": status,
         "message": message,
+        "process_info": process_info,
         "process_hierarchy": process_hierarchy
     }
 
