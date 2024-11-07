@@ -90,7 +90,7 @@ async def logging_es(level: LogLevelEnum, message: str, user_id: int, context: d
     }
 
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=False) as client:
             logging_api_url = LoggingAPIConfig.get_url()
             response = await client.post(logging_api_url, headers=headers, json=log_entry)
             if response.status_code != 200:
