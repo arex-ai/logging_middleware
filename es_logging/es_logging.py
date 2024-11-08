@@ -96,12 +96,16 @@ async def logging_es(
         "port": request.client.port,
         "method": request.method,
         "path": request.url.path,
-        "level": level,
-        "status": status,
-        "message": message,
-        "process_info": process_info,
-        "process_hierarchy": process_hierarchy
+        "level": level.value,  # Ensure enum is a string
+        "message": message
     }
+
+    if status is not None:
+        log_entry["status"] = status
+    if process_info is not None:
+        log_entry["process_info"] = process_info
+    if process_hierarchy is not None:
+        log_entry["process_hierarchy"] = process_hierarchy
 
     try:
         async with httpx.AsyncClient(verify=False) as client:
