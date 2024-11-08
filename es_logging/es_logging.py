@@ -1,5 +1,6 @@
 from enum import Enum
 import logging
+from typing import Optional
 import uuid
 import os
 
@@ -71,9 +72,9 @@ async def logging_es(
     message: str, 
     user_id: int, 
     context: dict,
-    status: str = None,
-    process_info: dict = None, 
-    process_hierarchy: dict = None
+    status: Optional[str] = None,
+    process_info: Optional[dict] = None, 
+    process_hierarchy: Optional[dict] = None
 ):
     await url_check()
     execution_uuid = context['execution_uuid']
