@@ -91,7 +91,7 @@ async def logging_es(
         "execution_UUID": execution_uuid,
         "user_id": user_id,
         "host": headers_content["host"],
-        "authorization": headers_content["authorization"],
+        # "authorization": headers_content["authorization"],
         "ip": request.client.host,
         "port": request.client.port,
         "method": request.method,
