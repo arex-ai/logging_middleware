@@ -56,12 +56,12 @@ async def url_check():
 async def log_context(request: Request):
     execution_uuid = request.headers.get('X-Execution-UUID', str(uuid.uuid4()))
 
-    token = request.headers.get('authorization')
-    if not token:
-        raise ValueError("Authorization token is missing from the headers.")
+    # token = request.headers.get('authorization')
+    # if not token:
+    #     raise ValueError("Authorization token is missing from the headers.")
     
     return {
-        "token": token,
+        # "token": token,
         "execution_uuid": execution_uuid,
         "request": request,
     }
@@ -79,11 +79,11 @@ async def logging_es(
     await url_check()
     execution_uuid = context['execution_uuid']
     request = context['request']
-    token = context['token']
+    # token = context['token']
 
-    headers = {
-        "Authorization": token
-    }
+    # headers = {
+    #     "Authorization": token
+    # }
 
     headers_content = dict(request.headers)
 
@@ -110,9 +110,10 @@ async def logging_es(
     try:
         async with httpx.AsyncClient(verify=False) as client:
             logging_api_url = LoggingAPIConfig.get_url()
-            response = await client.post(logging_api_url, headers=headers, json=log_entry)
+            # response = await client.post(logging_api_url, headers=headers, json=log_entry)
+            response = await client.post(logging_api_url, json=log_entry)
             if response.status_code != 200:
-                print(f"Failed to log to API. Status code: {response.status_code}. Headers: {headers}. Log Entry: {log_entry}")
+                print(f"Failed to log to API. Status code: {response.status_code}. Log Entry: {log_entry}")
                 return response
             return response
     except Exception as e:
