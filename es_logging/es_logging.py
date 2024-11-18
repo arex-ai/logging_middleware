@@ -73,8 +73,7 @@ async def logging_es(
     user_id: int, 
     context: dict,
     status: Optional[str] = None,
-    process_info: Optional[dict] = None, 
-    process_hierarchy: Optional[dict] = None
+    process_info: Optional[dict] = None
 ):
     await url_check()
     execution_uuid = context['execution_uuid']
