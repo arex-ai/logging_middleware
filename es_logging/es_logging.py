@@ -61,9 +61,9 @@ async def log_context(request: Request):
     #     raise ValueError("Authorization token is missing from the headers.")
     
     return {
-        # "token": token,
         "execution_uuid": execution_uuid,
         "request": request,
+        # "token": token,
     }
 
 
@@ -104,8 +104,6 @@ async def logging_es(
         log_entry["status"] = status
     if process_info is not None:
         log_entry["process_info"] = process_info
-    if process_hierarchy is not None:
-        log_entry["process_hierarchy"] = process_hierarchy
 
     try:
         async with httpx.AsyncClient(verify=False) as client:
