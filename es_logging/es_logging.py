@@ -111,8 +111,10 @@ async def logging_es(
             response = await client.post(logging_api_url, json=log_entry)
             if response.status_code != 200:
                 print(f"Failed to log to API. Status code: {response.status_code}. Log Entry: {log_entry}")
-                return response
+                raise ValueError(
+                    f"Failed to log to API. Error: {str(response.status_code)} -- {response}"
+                )
             return response
     except Exception as e:
         print(f"Exception occurred while logging to API: {e}. Log Entry: {log_entry}")
-        return e
+        raise ValueError(f"Failed to log to API. Error: {str(e)}")
